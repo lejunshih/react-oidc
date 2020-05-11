@@ -17,6 +17,10 @@ const AuthenticatorContext = React.createContext<IAuthenticatorContext>(
   DEFAULT_CONTEXT
 );
 
+export const useReactOidc = () => {
+  return React.useContext(AuthenticatorContext);
+};
+
 export interface IAuthenticatorState {
   isFetchingUser: boolean;
   userLoaded: boolean;
