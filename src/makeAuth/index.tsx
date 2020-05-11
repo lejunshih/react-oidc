@@ -63,6 +63,24 @@ function makeAuthenticator({
           isFetchingUser: true,
           userLoaded: false,
         };
+
+        this.setupUserManager();
+      }
+
+      public setupUserManager() {
+        this.userManager.events.addSilentRenewError(() => {
+          this.userManager.removeUser().then(() => {
+            this.getUser();
+          });
+        });
+
+        this.userManager.events.addUserLoaded(() => {
+          this.getUser();
+        });
+
+        this.userManager.events.addUserUnloaded(() => {
+          this.getUser();
+        });
       }
 
       public componentDidMount() {
