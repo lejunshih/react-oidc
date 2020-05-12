@@ -141,7 +141,7 @@ function makeAuthenticator({
         this.getUser().then((user) => {
           if (!user) {
             console.log("no user found, trying silent renew");
-            this.userManager.signinSilent();
+            this.userManager.signinSilentCallback();
           }
         });
       }
