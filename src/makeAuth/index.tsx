@@ -68,21 +68,12 @@ function makeAuthenticator({
       }
 
       public setupUserManager() {
-        this.userManager.events.addSilentRenewError(() => {
-          console.info("Silent renew error... removing user");
-          this.userManager
-            .removeUser()
-            .then(() => {
-              this.getUser();
-            })
-            .catch((e) => {
-              console.warn("error occured in silentRenewError", e);
-            });
+        this.userManager.events.addSilentRenewError((e) => {
+          console.info("Silent renew error... removing user", e);
         });
 
         this.userManager.events.addUserLoaded(() => {
           console.info("User loaded, getting user");
-          this.getUser();
         });
 
         this.userManager.events.addUserUnloaded(() => {
@@ -106,20 +97,23 @@ function makeAuthenticator({
         this.userManager.events.addAccessTokenExpired(() => {
           console.info("Expired, deleting user from local");
           this.userManager
-            .removeUser()
+            .signinSilent()
             .then(() => {
               this.getUser();
             })
             .catch((e) => {
               console.warn(
-                "error occured while removing user after access token expired",
+                "error occured while silent renewing user after access token expired",
                 e
               );
+              console.warn("removing user now");
+              this.userManager.removeUser().catch(() => {});
             });
         });
       }
 
       public componentDidMount() {
+        console.log("[custom] component did mount");
         this.getUser();
       }
 
