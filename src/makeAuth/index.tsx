@@ -138,9 +138,8 @@ function makeAuthenticator({
       public componentDidMount() {
         this.loadUserManager();
         console.log("[custom] component did mount");
-        this.getUser().then((user) => {
+        this.getUser(true).then((user) => {
           if (!user) {
-            this.setState({ isFetchingUser: true });
             console.log("no user found, trying silent renew");
             this.userManager.signinSilent().catch((e) => {
               console.warn(
@@ -157,12 +156,12 @@ function makeAuthenticator({
         this.unloadUserManager();
       }
 
-      public getUser = () => {
+      public getUser = (initial = false) => {
         console.log("[custom] getting user");
         return this.userManager
           .getUser()
           .then((user) => {
-            this.storeUser(user);
+            this.storeUser(user, initial);
             return user;
           })
           .catch((e) => {
@@ -171,7 +170,7 @@ function makeAuthenticator({
           });
       };
 
-      public storeUser = (user: User) => {
+      public storeUser = (user: User, initial = false) => {
         console.log("storing user", user);
         if (user) {
           this.setState(({ context }) => ({
@@ -183,7 +182,7 @@ function makeAuthenticator({
           this.setState(({ context }) => ({
             context: { ...context, user: null },
             isFetchingUser: false,
-            userLoaded: true,
+            userLoaded: !this.state.userLoaded && initial ? false : true,
           }));
         }
       };
