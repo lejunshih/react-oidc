@@ -178,9 +178,11 @@ function makeAuthenticator({
       };
 
       public signIn = async (args: any) => {
+        console.log("signing in..");
         this.userManager
           .signinRedirect({ data: { args } })
           .then(() => {
+            console.log("getting user after signin");
             this.getUser();
           })
           .catch((e) => {
