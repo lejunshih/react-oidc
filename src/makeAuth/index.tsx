@@ -140,6 +140,7 @@ function makeAuthenticator({
         console.log("[custom] component did mount");
         this.getUser().then((user) => {
           if (!user) {
+            this.setState({ isFetchingUser: true });
             console.log("no user found, trying silent renew");
             this.userManager.signinSilent();
           }
