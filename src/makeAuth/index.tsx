@@ -142,9 +142,13 @@ function makeAuthenticator({
           if (!user) {
             this.setState({ isFetchingUser: true });
             console.log("no user found, trying silent renew");
-            this.userManager
-              .signinSilent()
-              .catch((e) => console.warn("ouch, signinSilent went wrong", e));
+            this.userManager.signinSilent().catch((e) => {
+              console.warn(
+                "User does not exist, so therefore must not be logged in",
+                e
+              );
+              this.getUser();
+            });
           }
         });
       }
