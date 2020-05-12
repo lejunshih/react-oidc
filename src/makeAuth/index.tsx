@@ -71,6 +71,7 @@ function makeAuthenticator({
 
       public onUserLoaded() {
         console.info("User loaded, getting user");
+        this.getUser();
       }
 
       public onUserUnloaded() {
@@ -179,15 +180,9 @@ function makeAuthenticator({
 
       public signIn = async (args: any) => {
         console.log("signing in..");
-        this.userManager
-          .signinRedirect({ data: { args } })
-          .then(() => {
-            console.log("getting user after signin");
-            this.getUser();
-          })
-          .catch((e) => {
-            console.warn("error occured while signing in", e);
-          });
+        this.userManager.signinRedirect({ data: { args } }).catch((e) => {
+          console.warn("error occured while signing in", e);
+        });
       };
 
       public isValid = () => {
