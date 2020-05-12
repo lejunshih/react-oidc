@@ -69,17 +69,53 @@ function makeAuthenticator({
 
       public setupUserManager() {
         this.userManager.events.addSilentRenewError(() => {
-          this.userManager.removeUser().then(() => {
-            this.getUser();
-          });
+          console.info("Silent renew error... removing user");
+          this.userManager
+            .removeUser()
+            .then(() => {
+              this.getUser();
+            })
+            .catch((e) => {
+              console.warn("error occured in silentRenewError", e);
+            });
         });
 
         this.userManager.events.addUserLoaded(() => {
+          console.info("User loaded, getting user");
           this.getUser();
         });
 
         this.userManager.events.addUserUnloaded(() => {
+          console.info("User unloaded, getting user");
+
           this.getUser();
+        });
+
+        this.userManager.events.addAccessTokenExpiring(() => {
+          console.info("expiring... signing in silent");
+          this.userManager
+            .signinSilent()
+            .then(() => {
+              this.getUser();
+            })
+            .catch((e) => {
+              console.warn("error occured while silent renewing", e);
+            });
+        });
+
+        this.userManager.events.addAccessTokenExpired(() => {
+          console.info("Expired, deleting user from local");
+          this.userManager
+            .removeUser()
+            .then(() => {
+              this.getUser();
+            })
+            .catch((e) => {
+              console.warn(
+                "error occured while removing user after access token expired",
+                e
+              );
+            });
         });
       }
 
