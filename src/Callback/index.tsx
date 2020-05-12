@@ -1,31 +1,52 @@
-import * as React from 'react'
-import { User, UserManager, UserManagerSettings } from 'oidc-client'
+import * as React from "react";
+import { User, UserManager, UserManagerSettings } from "oidc-client";
 
 export interface ICallbackProps {
-  onSuccess?: (user: User) => void
-  onError?: (err: any) => void
-  userManager: UserManager
+  onSuccess?: (user: User) => void;
+  onError?: (err: any) => void;
+  userManager: UserManager;
 }
 class Callback extends React.Component<ICallbackProps> {
   public componentDidMount() {
-    const { onSuccess, onError, userManager } = this.props
+    const { onSuccess, onError, userManager } = this.props;
 
-    const um = userManager
+    const um = userManager;
     um.signinRedirectCallback()
-      .then(user => {
+      .then((user) => {
         if (onSuccess) {
-          onSuccess(user)
+          onSuccess(user);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         if (onError) {
-          onError(err)
+          onError(err);
         }
-      })
+      });
   }
   public render() {
-    return this.props.children || null
+    return this.props.children || null;
+  }
+}
+export class SilentCallback extends React.Component<ICallbackProps> {
+  public componentDidMount() {
+    const { onSuccess, onError, userManager } = this.props;
+
+    const um = userManager;
+    um.signinSilentCallback()
+      .then((user) => {
+        if (onSuccess) {
+          onSuccess(user);
+        }
+      })
+      .catch((err) => {
+        if (onError) {
+          onError(err);
+        }
+      });
+  }
+  public render() {
+    return this.props.children || null;
   }
 }
 
-export default Callback
+export default Callback;

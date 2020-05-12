@@ -4,6 +4,13 @@ import {
   useReactOidc,
 } from "./makeAuth";
 import makeUserManager from "./makeUserManager";
-import Callback from "./Callback";
+import Callback, { SilentCallback } from "./Callback";
 
-export { Callback, UserData, makeAuthenticator, makeUserManager, useReactOidc };
+export {
+  Callback,
+  UserData,
+  makeAuthenticator,
+  makeUserManager,
+  useReactOidc,
+  SilentCallback,
+};
