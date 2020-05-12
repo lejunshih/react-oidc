@@ -1,5 +1,6 @@
-# React OIDC
+# [OUTDATED DOCS] React OIDC
 
+Forked from [react-oidc](https://github.com/thchia/react-oidc).
 Wrapper for [oidc-client-js](https://github.com/IdentityModel/oidc-client-js), to be used in React apps.
 
 ## Quick start
@@ -15,32 +16,32 @@ You will need the [config](https://github.com/IdentityModel/oidc-client-js/wiki#
 Example using `react-router`
 
 ```jsx
-import { makeAuthenticator, makeUserManager, Callback } from 'react-oidc'
+import { makeAuthenticator, makeUserManager, Callback } from "react-oidc";
 
 // supply this yourself
-import App from '../layouts/App'
-import userManagerConfig from '../config'
+import App from "../layouts/App";
+import userManagerConfig from "../config";
 
-const userManager = makeUserManager(userManagerConfig)
+const userManager = makeUserManager(userManagerConfig);
 const AppWithAuth = makeAuthenticator({
   userManager: userManager,
   signinArgs: {
     state: {
-      foo: 15
-    }
-  }
-})(App)
+      foo: 15,
+    },
+  },
+})(App);
 
 export default () => (
   <Router>
     <Switch>
       <Route
         path="/callback"
-        render={routeProps => (
+        render={(routeProps) => (
           <Callback
-            onSuccess={user => {
+            onSuccess={(user) => {
               // `user.state` will reflect the state that was passed in via signinArgs.
-              routeProps.history.push('/')
+              routeProps.history.push("/");
             }}
             userManager={userManager}
           />
@@ -49,7 +50,7 @@ export default () => (
       <AppWithAuth />
     </Switch>
   </Router>
-)
+);
 ```
 
 ## Slow start
@@ -108,7 +109,7 @@ This component exposes the data of the authenticated user. If you are familiar w
 
 ```jsx
 <UserData.Consumer>
-  {context => <p>{context.user.id_token}</p>}
+  {(context) => <p>{context.user.id_token}</p>}
 </UserData.Consumer>
 ```
 
