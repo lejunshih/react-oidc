@@ -91,6 +91,7 @@ function makeAuthenticator({
             console.warn("error occured while silent renewing", e);
           });
       }
+
       public onAccessTokenExpired() {
         console.info("Expired, deleting user from local");
         this.userManager
@@ -109,14 +110,16 @@ function makeAuthenticator({
       }
 
       public loadUserManager() {
-        this.userManager.events.addSilentRenewError(this.onSilentRenewError);
-        this.userManager.events.addUserLoaded(this.onUserLoaded);
-        this.userManager.events.addUserUnloaded(this.onUserUnloaded);
+        this.userManager.events.addSilentRenewError(
+          this.onSilentRenewError.bind(this)
+        );
+        this.userManager.events.addUserLoaded(this.onUserLoaded.bind(this));
+        this.userManager.events.addUserUnloaded(this.onUserUnloaded.bind(this));
         this.userManager.events.addAccessTokenExpiring(
-          this.onAccessTokenExpiring
+          this.onAccessTokenExpiring.bind(this)
         );
         this.userManager.events.addAccessTokenExpired(
-          this.onAccessTokenExpired
+          this.onAccessTokenExpired.bind(this)
         );
       }
 
@@ -135,7 +138,12 @@ function makeAuthenticator({
       public componentDidMount() {
         this.loadUserManager();
         console.log("[custom] component did mount");
-        this.getUser();
+        this.getUser().then((user) => {
+          if (!user) {
+            console.log("no user found, trying silent renew");
+            this.userManager.signinSilent();
+          }
+        });
       }
 
       public componentWillUnmount() {
@@ -144,13 +152,20 @@ function makeAuthenticator({
 
       public getUser = () => {
         console.log("[custom] getting user");
-        this.userManager
+        return this.userManager
           .getUser()
-          .then((user) => this.storeUser(user))
-          .catch(() => this.setState({ isFetchingUser: false }));
+          .then((user) => {
+            this.storeUser(user);
+            return user;
+          })
+          .catch((e) => {
+            console.warn("something went wrong while getting user", e);
+            this.setState({ isFetchingUser: false });
+          });
       };
 
       public storeUser = (user: User) => {
+        console.log("storing user", user);
         if (user) {
           this.setState(({ context }) => ({
             context: { ...context, user },
