@@ -63,58 +63,82 @@ function makeAuthenticator({
           isFetchingUser: true,
           userLoaded: false,
         };
-
-        this.setupUserManager();
       }
 
-      public setupUserManager() {
-        this.userManager.events.addSilentRenewError((e) => {
-          console.info("Silent renew error... removing user", e);
-        });
+      public onSilentRenewError(e) {
+        console.info("Silent renew error... removing user", e);
+      }
 
-        this.userManager.events.addUserLoaded(() => {
-          console.info("User loaded, getting user");
-        });
+      public onUserLoaded() {
+        console.info("User loaded, getting user");
+      }
 
-        this.userManager.events.addUserUnloaded(() => {
-          console.info("User unloaded, getting user");
+      public onUserUnloaded() {
+        console.info("User unloaded, getting user");
 
-          this.getUser();
-        });
+        this.getUser();
+      }
 
-        this.userManager.events.addAccessTokenExpiring(() => {
-          console.info("expiring... signing in silent");
-          this.userManager
-            .signinSilent()
-            .then(() => {
-              this.getUser();
-            })
-            .catch((e) => {
-              console.warn("error occured while silent renewing", e);
-            });
-        });
+      public onAccessTokenExpiring() {
+        console.info("expiring... signing in silent");
+        this.userManager
+          .signinSilent()
+          .then(() => {
+            this.getUser();
+          })
+          .catch((e) => {
+            console.warn("error occured while silent renewing", e);
+          });
+      }
+      public onAccessTokenExpired() {
+        console.info("Expired, deleting user from local");
+        this.userManager
+          .signinSilent()
+          .then(() => {
+            this.getUser();
+          })
+          .catch((e) => {
+            console.warn(
+              "error occured while silent renewing user after access token expired",
+              e
+            );
+            console.warn("removing user now");
+            this.userManager.removeUser().catch(() => {});
+          });
+      }
 
-        this.userManager.events.addAccessTokenExpired(() => {
-          console.info("Expired, deleting user from local");
-          this.userManager
-            .signinSilent()
-            .then(() => {
-              this.getUser();
-            })
-            .catch((e) => {
-              console.warn(
-                "error occured while silent renewing user after access token expired",
-                e
-              );
-              console.warn("removing user now");
-              this.userManager.removeUser().catch(() => {});
-            });
-        });
+      public loadUserManager() {
+        this.userManager.events.addSilentRenewError(this.onSilentRenewError);
+        this.userManager.events.addUserLoaded(this.onUserLoaded);
+        this.userManager.events.addUserUnloaded(this.onUserUnloaded);
+        this.userManager.events.addAccessTokenExpiring(
+          this.onAccessTokenExpiring
+        );
+        this.userManager.events.addAccessTokenExpired(
+          this.onAccessTokenExpired
+        );
+      }
+
+      public unloadUserManager() {
+        this.userManager.events.removeSilentRenewError(this.onSilentRenewError);
+        this.userManager.events.removeUserLoaded(this.onUserLoaded);
+        this.userManager.events.removeUserUnloaded(this.onUserUnloaded);
+        this.userManager.events.removeAccessTokenExpiring(
+          this.onAccessTokenExpiring
+        );
+        this.userManager.events.removeAccessTokenExpired(
+          this.onAccessTokenExpired
+        );
       }
 
       public componentDidMount() {
+        this.loadUserManager();
         console.log("[custom] component did mount");
         this.getUser();
+      }
+
+      public componentWillUnmount() {
+        this.unloadUserManager();
       }
 
       public getUser = () => {
