@@ -90,6 +90,13 @@ function makeAuthenticator({
 
       public onAccessTokenExpired() {
         console.info("Expired, deleting user from local");
+
+        const user = this.state.context.user;
+        if (user && user.expired) {
+          console.info("Session expired, not refreshing user");
+          return;
+        }
+
         this.userManager
           .signinSilent()
           .then(() => {
