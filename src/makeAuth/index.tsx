@@ -70,18 +70,14 @@ function makeAuthenticator({
       }
 
       public onUserLoaded() {
-        console.info("User loaded, getting user");
         this.getUser();
       }
 
       public onUserUnloaded() {
-        console.info("User unloaded, getting user");
-
         this.getUser();
       }
 
       public onAccessTokenExpiring() {
-        console.info("expiring... signing in silent");
         this.userManager
           .signinSilent()
           .then(() => {
@@ -137,10 +133,9 @@ function makeAuthenticator({
 
       public componentDidMount() {
         this.loadUserManager();
-        console.log("[custom] component did mount");
         this.getUser(true).then((user) => {
           if (!user) {
-            console.log("no user found, trying silent renew");
+            console.warn("no user found, trying silent renew");
             this.userManager.signinSilent().catch((e) => {
               console.warn(
                 "User does not exist, so therefore must not be logged in",
@@ -157,7 +152,6 @@ function makeAuthenticator({
       }
 
       public getUser = (initial = false) => {
-        console.log("[custom] getting user");
         return this.userManager
           .getUser()
           .then((user) => {
@@ -171,7 +165,6 @@ function makeAuthenticator({
       };
 
       public storeUser = (user: User, initial = false) => {
-        console.log("storing user", user);
         if (user) {
           this.setState(({ context }) => ({
             context: { ...context, user },
@@ -200,7 +193,6 @@ function makeAuthenticator({
       };
 
       public signIn = async (args: any) => {
-        console.log("signing in..");
         this.userManager.signinRedirect({ data: { args } }).catch((e) => {
           console.warn("error occured while signing in", e);
         });

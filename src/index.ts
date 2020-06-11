@@ -5,6 +5,11 @@ import {
 } from "./makeAuth";
 import makeUserManager from "./makeUserManager";
 import Callback, { SilentCallback } from "./Callback";
+import { Log } from "oidc-client";
+
+const setOidcLogLevel = (level: number = Log.INFO) => {
+  Log.level = level;
+};
 
 export {
   Callback,
@@ -13,4 +18,5 @@ export {
   makeUserManager,
   useReactOidc,
   SilentCallback,
+  setOidcLogLevel,
 };
