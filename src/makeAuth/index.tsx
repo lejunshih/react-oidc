@@ -3,13 +3,13 @@ import { User, UserManager } from "oidc-client";
 
 export interface IAuthenticatorContext {
   signIn: (args: any) => void;
-  signOut: () => void;
+  signOut: (args?: any) => void;
   user: User | null;
   userManager: UserManager | null;
 }
 const DEFAULT_CONTEXT: IAuthenticatorContext = {
   signIn: (args: any) => {},
-  signOut: () => {},
+  signOut: (args?: any) => {},
   user: null,
   userManager: null,
 };
@@ -26,7 +26,7 @@ export interface IAuthenticatorState {
   userLoaded: boolean;
   context: {
     signIn: (args: any) => void;
-    signOut: () => void;
+    signOut: (args?: any) => void;
     user: User | null;
     userManager: UserManager;
   };
@@ -36,6 +36,13 @@ export interface IMakeAuthenticatorParams {
   userManager: UserManager;
   signinArgs?: any;
 }
+
+function manualLogin(userManager: UserManager, args?: any) {
+  return userManager.signinRedirect({ data: { args } }).catch((e) => {
+    console.warn("error occured while signing in", e);
+  });
+}
+
 function makeAuthenticator({
   userManager,
   placeholderComponent,
@@ -187,9 +194,9 @@ function makeAuthenticator({
         }
       };
 
-      public signOut = () => {
+      public signOut = (args: any) => {
         this.userManager
-          .signoutRedirect()
+          .signoutRedirect({ data: { args } })
           .then(() => {
             this.userManager.removeUser();
             this.getUser();
@@ -200,9 +207,7 @@ function makeAuthenticator({
       };
 
       public signIn = async (args: any) => {
-        this.userManager.signinRedirect({ data: { args } }).catch((e) => {
-          console.warn("error occured while signing in", e);
-        });
+        manualLogin(this.userManager, args);
       };
 
       public isValid = () => {
@@ -224,4 +229,5 @@ function makeAuthenticator({
     };
   };
 }
-export { AuthenticatorContext, makeAuthenticator };
+
+export { AuthenticatorContext, makeAuthenticator, manualLogin };

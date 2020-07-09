@@ -2,9 +2,10 @@ import {
   AuthenticatorContext as UserData,
   makeAuthenticator,
   useReactOidc,
+  manualLogin,
 } from "./makeAuth";
 import makeUserManager from "./makeUserManager";
-import Callback, { SilentCallback } from "./Callback";
+import Callback, { SilentCallback, LogoutCallback } from "./Callback";
 import { Log } from "oidc-client";
 
 const setOidcLogLevel = (level: number = Log.INFO) => {
@@ -19,4 +20,6 @@ export {
   useReactOidc,
   SilentCallback,
   setOidcLogLevel,
+  LogoutCallback,
+  manualLogin,
 };
