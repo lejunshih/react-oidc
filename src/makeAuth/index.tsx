@@ -128,9 +128,9 @@ function makeAuthenticator({
         this.userManager.events.addAccessTokenExpiring(
           this.onAccessTokenExpiring.bind(this)
         );
-        this.userManager.events.addAccessTokenExpired(
-          this.onAccessTokenExpired.bind(this)
-        );
+        // this.userManager.events.addAccessTokenExpired(
+        //   this.onAccessTokenExpired.bind(this)
+        // );
       }
 
       public unloadUserManager() {
