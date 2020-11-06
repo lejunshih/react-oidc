@@ -74,6 +74,13 @@ function makeAuthenticator({
 
       public onSilentRenewError(e) {
         console.info("Silent renew error... removing user", e);
+
+        // remove user
+        this.userManager.removeUser().then(() => {
+          {
+            this.getUser();
+          }
+        });
       }
 
       public onUserLoaded() {
@@ -85,14 +92,9 @@ function makeAuthenticator({
       }
 
       public onAccessTokenExpiring() {
-        this.userManager
-          .signinSilent()
-          .then(() => {
-            this.getUser();
-          })
-          .catch((e) => {
-            console.warn("error occured while silent renewing", e);
-          });
+        this.userManager.signinSilent().then(() => {
+          this.getUser();
+        });
       }
 
       public onAccessTokenExpired() {
