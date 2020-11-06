@@ -92,9 +92,20 @@ function makeAuthenticator({
       }
 
       public onAccessTokenExpiring() {
-        this.userManager.signinSilent().then(() => {
-          this.getUser();
-        });
+        this.userManager
+          .signinSilent()
+          .then(() => {
+            this.getUser();
+          })
+          .catch((e) => {
+            console.info("Silent renew failed in background, remove user..", e);
+            // remove user
+            this.userManager.removeUser().then(() => {
+              {
+                this.getUser();
+              }
+            });
+          });
       }
 
       public onAccessTokenExpired() {
